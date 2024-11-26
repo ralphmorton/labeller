@@ -120,7 +120,7 @@ impl App {
             .block(text_block);
 
         let ground_truth_block = Block::bordered()
-            .padding(Padding { left: 2, right: 2, top: 2, bottom: 2 })
+            .padding(Padding { left: 1, right: 1, top: 1, bottom: 1 })
             .title(Line::from(" Ground truth ").centered());
 
         let example_ground_truth = example
@@ -136,7 +136,7 @@ impl App {
             .block(ground_truth_block);
 
         let label_block = Block::bordered()
-            .padding(Padding { left: 2, right: 2, top: 2, bottom: 2 })
+            .padding(Padding { left: 1, right: 1, top: 1, bottom: 1 })
             .title(Line::from(" Label ").centered());
 
         let label_text = match example.label.as_ref() {
