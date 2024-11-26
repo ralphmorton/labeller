@@ -3,7 +3,7 @@ use ratatui::{
     layout::{Constraint, Layout},
     style::{Color, Stylize},
     text::{Line, Span},
-    widgets::{Block, Padding, Paragraph, Gauge},
+    widgets::{Block, Padding, Paragraph, Gauge, Wrap},
     DefaultTerminal, Frame,
 };
 
@@ -115,6 +115,7 @@ impl App {
             .title(Line::from(text_title).centered());
 
         let text = Paragraph::new(example.example.text.as_str())
+            .wrap(Wrap { trim: true })
             .centered()
             .block(text_block);
 
@@ -130,6 +131,7 @@ impl App {
             .unwrap_or("n/a");
 
         let ground_truth = Paragraph::new(example_ground_truth)
+            .wrap(Wrap { trim: true })
             .centered()
             .block(ground_truth_block);
 
