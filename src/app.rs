@@ -3,7 +3,7 @@ use ratatui::{
     layout::{Constraint, Layout},
     style::{Color, Stylize},
     text::{Line, Span},
-    widgets::{Block, Padding, Paragraph},
+    widgets::{Block, Padding, Paragraph, Gauge},
     DefaultTerminal, Frame,
 };
 
@@ -70,6 +70,12 @@ impl App {
                                 }
                             }
                         }
+                        KeyCode::Tab => {
+                            self.index = self.examples
+                                .iter()
+                                .position(|e| e.label.is_none())
+                                .unwrap_or(self.examples.len() - 1);
+                        }
                         _ => {}
                     }
                 }
@@ -88,9 +94,10 @@ impl App {
             Constraint::Percentage(25)
         ]).areas(frame.area());
 
-        let [top_left, bottom_left] = Layout::vertical([
-            Constraint::Percentage(50),
-            Constraint::Percentage(50)
+        let [progress, top_left, bottom_left] = Layout::vertical([
+            Constraint::Percentage(2),
+            Constraint::Fill(1),
+            Constraint::Fill(1)
         ]).areas(left);
 
         let [top_right, bottom_right] = Layout::vertical([
@@ -98,9 +105,14 @@ impl App {
             Constraint::Fill(1)
         ]).areas(right);
 
+        let index_frac = ((self.index + 1) as f32) / (self.examples.len() as f32);
+        let progress_gauge = Gauge::default()
+            .percent((index_frac * 100.0).floor() as u16);
+
+        let text_title = format!(" Example text ({} / {}) ", self.index + 1, self.examples.len());
         let text_block = Block::bordered()
             .padding(Padding { left: 2, right: 2, top: 2, bottom: 2 })
-            .title(Line::from(" Example text ").centered());
+            .title(Line::from(text_title).centered());
 
         let text = Paragraph::new(example.example.text.as_str())
             .centered()
@@ -152,6 +164,10 @@ impl App {
                 Span::from(" Next label")
             ]),
             Line::from(vec![
+                Span::from(" TAB ".fg(Color::White).bg(Color::DarkGray).bold()),
+                Span::from(" Skip to first unlabelled")
+            ]),
+            Line::from(vec![
                 Span::from(" Ctrl-C ".fg(Color::White).bg(Color::DarkGray).bold()),
                 Span::from(" Save and exit")
             ])
@@ -159,6 +175,7 @@ impl App {
 
         let instructions = Paragraph::new(instruction_lines);
 
+        frame.render_widget(progress_gauge, progress);
         frame.render_widget(text, top_left);
         frame.render_widget(ground_truth, bottom_left);
         frame.render_widget(label, top_right);
